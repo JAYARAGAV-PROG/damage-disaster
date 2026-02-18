@@ -1,0 +1,22 @@
+{
+  "name": "Post-Disaster Damage Assessment Platform",
+  "short_name": "Disaster Report",
+  "description": "Report infrastructure damage and help authorities respond quickly",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f97316",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

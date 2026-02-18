@@ -64,9 +64,29 @@ export default {
                     blue: 'hsl(var(--education-blue))',
                     green: 'hsl(var(--education-green))'
                 },
-                success: 'hsl(var(--success))',
-                warning: 'hsl(var(--warning))',
-                info: 'hsl(var(--info))',
+                success: {
+                    DEFAULT: 'hsl(var(--success))',
+                    foreground: 'hsl(var(--success-foreground))'
+                },
+                warning: {
+                    DEFAULT: 'hsl(var(--warning))',
+                    foreground: 'hsl(var(--warning-foreground))'
+                },
+                info: {
+                    DEFAULT: 'hsl(var(--info))',
+                    foreground: 'hsl(var(--info-foreground))'
+                },
+                status: {
+                    unverified: 'hsl(var(--status-unverified))',
+                    verified: 'hsl(var(--status-verified))',
+                    'in-progress': 'hsl(var(--status-in-progress))',
+                    resolved: 'hsl(var(--status-resolved))'
+                },
+                severity: {
+                    low: 'hsl(var(--severity-low))',
+                    medium: 'hsl(var(--severity-medium))',
+                    high: 'hsl(var(--severity-high))'
+                },
                 sidebar: {
                     DEFAULT: 'hsl(var(--sidebar-background))',
                     background: 'hsl(var(--sidebar-background))',
