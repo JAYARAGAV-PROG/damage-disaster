@@ -1,91 +1,293 @@
-# Welcome to Your Miaoda Project
+# Post-Disaster Damage Assessment Platform
 
-## Project Info
+A full-stack web application that enables citizens to report infrastructure damage using mobile devices and provides authorities with a centralized map-based dashboard for rapid response coordination across India.
 
-## Project Directory
+## 🌟 Features
 
-```
-├── README.md # Documentation
-├── components.json # Component library configuration
-├── index.html # Entry file
-├── package.json # Package management
-├── postcss.config.js # PostCSS configuration
-├── public # Static resources directory
-│   ├── favicon.png # Icon
-│   └── images # Image resources
-├── src # Source code directory
-│   ├── App.tsx # Entry file
-│   ├── components # Components directory
-│   ├── context # Context directory
-│   ├── db # Database configuration directory
-│   ├── hooks # Common hooks directory
-│   ├── index.css # Global styles
-│   ├── layout # Layout directory
-│   ├── lib # Utility library directory
-│   ├── main.tsx # Entry file
-│   ├── routes.tsx # Routing configuration
-│   ├── pages # Pages directory
-│   ├── services # Database interaction directory
-│   ├── types # Type definitions directory
-├── tsconfig.app.json # TypeScript frontend configuration file
-├── tsconfig.json # TypeScript configuration file
-├── tsconfig.node.json # TypeScript Node.js configuration file
-└── vite.config.ts # Vite configuration file
-```
+### Citizen Features
+- **User Registration & Login**: Secure authentication system
+- **Damage Reporting**: Upload photos with automatic geolocation
+- **Image Compression**: Automatic client-side compression (target: under 1MB)
+- **Offline Support**: Reports saved locally and synced when online
+- **Category Selection**: Flooding, Road Blocked, Potholes, Building Damage, Power Outage, Water Supply Issue, Other
+- **Severity Levels**: Low, Medium, High
 
-## Tech Stack
+### Authority Features (Admin Only)
+- **Interactive Map Dashboard**: Leaflet.js with OpenStreetMap
+- **Real-time Updates**: Automatic refresh every 30 seconds
+- **Geographic Filtering**: Bounding box queries for visible area
+- **Status Management**: Update reports (Unverified → Verified → In Progress → Resolved)
+- **Advanced Filtering**: By category, severity, and status
+- **Statistics Dashboard**: Real-time metrics and counts
 
-Vite, TypeScript, React, Supabase
+## 🏗️ Technology Stack
 
-## Development Guidelines
+### Backend
+- **Framework**: Python FastAPI
+- **Database**: SQLite with spatial indexing
+- **Image Storage**: Cloudinary (free tier)
+- **Authentication**: JWT tokens with bcrypt password hashing
+- **API Documentation**: Auto-generated Swagger UI
 
-### How to edit code locally?
+### Frontend
+- **Framework**: React 18 with TypeScript
+- **UI Library**: shadcn/ui + Tailwind CSS
+- **Map Integration**: Leaflet.js with OpenStreetMap
+- **State Management**: React Context + Hooks
+- **Offline Storage**: IndexedDB
+- **Build Tool**: Vite
 
-You can choose [VSCode](https://code.visualstudio.com/Download) or any IDE you prefer. The only requirement is to have Node.js and npm installed.
+## 📋 Prerequisites
 
-### Environment Requirements
+- **Python**: 3.8 or higher
+- **Node.js**: 18 or higher
+- **pnpm**: Latest version
+- **Cloudinary Account**: Free tier (for image storage)
 
-```
-# Node.js ≥ 20
-# npm ≥ 10
-Example:
-# node -v   # v20.18.3
-# npm -v    # 10.8.2
-```
+## 🚀 Installation & Setup
 
-### Installing Node.js on Windows
+### 1. Clone the Repository
 
-```
-# Step 1: Visit the Node.js official website: https://nodejs.org/, click download. The website will automatically suggest a suitable version (32-bit or 64-bit) for your system.
-# Step 2: Run the installer: Double-click the downloaded installer to run it.
-# Step 3: Complete the installation: Follow the installation wizard to complete the process.
-# Step 4: Verify installation: Open Command Prompt (cmd) or your IDE terminal, and type `node -v` and `npm -v` to check if Node.js and npm are installed correctly.
+```bash
+cd /workspace/app-9pzqnj8eh1j5
 ```
 
-### Installing Node.js on macOS
+### 2. Backend Setup
 
-```
-# Step 1: Using Homebrew (Recommended method): Open Terminal. Type the command `brew install node` and press Enter. If Homebrew is not installed, you need to install it first by running the following command in Terminal:
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-Alternatively, use the official installer: Visit the Node.js official website. Download the macOS .pkg installer. Open the downloaded .pkg file and follow the prompts to complete the installation.
-# Step 2: Verify installation: Open Command Prompt (cmd) or your IDE terminal, and type `node -v` and `npm -v` to check if Node.js and npm are installed correctly.
-```
+```bash
+# Navigate to backend directory
+cd backend
 
-### After installation, follow these steps:
+# Install Python dependencies
+pip install -r requirements.txt
 
-```
-# Step 1: Download the code package
-# Step 2: Extract the code package
-# Step 3: Open the code package with your IDE and navigate into the code directory
-# Step 4: In the IDE terminal, run the command to install dependencies: npm i
-# Step 5: In the IDE terminal, run the command to start the development server: npm run dev -- --host 127.0.0.1
-# Step 6: if step 5 failed, try this command to start the development server: npx vite --host 127.0.0.1
+# Configure Cloudinary
+cp .env.example .env
+# Edit .env and add your Cloudinary credentials:
+# CLOUDINARY_CLOUD_NAME=your_cloud_name
+# CLOUDINARY_API_KEY=your_api_key
+# CLOUDINARY_API_SECRET=your_api_secret
 ```
 
-### How to develop backend services?
+**Get Cloudinary Credentials:**
+1. Sign up at https://cloudinary.com/ (free tier)
+2. Go to Dashboard
+3. Copy Cloud Name, API Key, and API Secret
+4. Paste into `.env` file
 
-Configure environment variables and install relevant dependencies.If you need to use a database, please use the official version of Supabase.
+### 3. Frontend Setup
 
-## Learn More
+```bash
+# Navigate back to root directory
+cd ..
 
-You can also check the help documentation: Download and Building the app（ [https://intl.cloud.baidu.com/en/doc/MIAODA/s/download-and-building-the-app-en](https://intl.cloud.baidu.com/en/doc/MIAODA/s/download-and-building-the-app-en)）to learn more detailed content.
+# Install frontend dependencies
+pnpm install
+```
+
+## 🎯 Running the Application
+
+### Start Backend Server
+
+```bash
+# From backend directory
+cd backend
+python main.py
+```
+
+Backend will run on: **http://localhost:8000**
+- API Documentation: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
+
+### Start Frontend Development Server
+
+```bash
+# From root directory (in a new terminal)
+pnpm run dev
+```
+
+Frontend will run on: **http://localhost:5173**
+
+## 👥 Default Credentials
+
+### Admin Account
+- **Username**: `admin`
+- **Password**: `admin123`
+- **Access**: Authority Dashboard with full permissions
+
+### User Account
+- Register a new account at `/register`
+- **Access**: Citizen reporting interface
+
+## 📱 Usage Guide
+
+### For Citizens (Users)
+
+1. **Register/Login**: Create an account or login at `/login`
+2. **Report Damage**:
+   - Navigate to `/report`
+   - Allow location access
+   - Take/upload a photo of the damage
+   - Select category and severity
+   - Add description
+   - Submit report
+3. **Offline Mode**: Reports are saved locally and automatically synced when connection is restored
+
+### For Authorities (Admins)
+
+1. **Login**: Use admin credentials at `/login`
+2. **View Dashboard**: Automatically redirected to `/dashboard`
+3. **Map View**:
+   - Pan and zoom to explore reports
+   - Click markers to view details
+   - Color-coded by severity (Red=High, Orange=Medium, Green=Low)
+4. **List View**: Switch to see all reports in a grid
+5. **Filter Reports**: Use sidebar to filter by category, severity, or status
+6. **Update Status**: Click on any report to update its status
+
+## 🗄️ Database Schema
+
+### Users Table
+```sql
+- id: INTEGER (Primary Key)
+- username: TEXT (Unique)
+- email: TEXT (Unique)
+- password_hash: TEXT
+- role: TEXT (user/admin)
+- created_at: TIMESTAMP
+```
+
+### Reports Table
+```sql
+- id: TEXT (UUID, Primary Key)
+- user_id: INTEGER (Foreign Key)
+- category: TEXT
+- severity: TEXT (Low/Medium/High)
+- description: TEXT
+- latitude: REAL (Indexed)
+- longitude: REAL (Indexed)
+- image_url: TEXT
+- status: TEXT (Unverified/Verified/In Progress/Resolved)
+- created_at: TIMESTAMP
+```
+
+## 🔌 API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login user
+- `GET /api/auth/me` - Get current user info
+
+### Reports
+- `POST /api/reports` - Create damage report (with image upload)
+- `GET /api/reports` - Get reports (with optional geographic bounds)
+- `GET /api/reports/{id}` - Get specific report
+- `PATCH /api/reports/{id}/status` - Update report status (admin only)
+- `GET /api/reports/stats/summary` - Get statistics (admin only)
+
+## 🌐 Offline Support
+
+The application includes robust offline functionality:
+
+1. **Offline Detection**: Automatic detection of network status
+2. **Local Storage**: Reports saved to IndexedDB when offline
+3. **Automatic Sync**: Pending reports automatically uploaded when connection restored
+4. **Manual Sync**: Users can manually trigger sync
+5. **Sync Status**: Visual indicators show pending report count
+
+## 🎨 Design System
+
+- **Primary Color**: Orange (#f97316) - Emergency/Alert theme
+- **Secondary Color**: Blue (#3b82f6) - Information/Trust
+- **Status Colors**:
+  - Unverified: Yellow
+  - Verified: Blue
+  - In Progress: Orange
+  - Resolved: Green
+- **Severity Colors**:
+  - Low: Green
+  - Medium: Orange
+  - High: Red
+
+## 🔒 Security Features
+
+- JWT-based authentication
+- Bcrypt password hashing
+- Role-based access control (User/Admin)
+- Protected API endpoints
+- CORS configuration
+- Input validation
+
+## 📊 Performance Optimizations
+
+- **Database**: Spatial indexing on latitude/longitude
+- **Images**: Client-side compression before upload
+- **Map**: Debounced queries (500ms) and bounding box filtering
+- **API**: Efficient SQL queries with proper indexing
+- **Frontend**: Code splitting and lazy loading
+
+## 🐛 Troubleshooting
+
+### Backend Issues
+
+**Database not initializing:**
+```bash
+# Delete existing database and restart
+rm backend/disaster_reports.db
+python backend/main.py
+```
+
+**Cloudinary upload failing:**
+- Verify credentials in `.env`
+- Check free tier limits (25 credits/month)
+- Ensure image size is under 10MB
+
+### Frontend Issues
+
+**CORS errors:**
+- Ensure backend is running on port 8000
+- Check CORS configuration in `backend/main.py`
+
+**Map not loading:**
+- Check internet connection (OpenStreetMap requires online access)
+- Verify Leaflet CSS is imported in `main.tsx`
+
+**Offline sync not working:**
+- Check browser IndexedDB support
+- Clear browser cache and try again
+
+## 📝 Development Notes
+
+### Adding New Damage Categories
+
+1. Update `ReportCategory` type in `src/types/report.ts`
+2. Add to `CATEGORIES` array in `src/components/ReportForm.tsx`
+3. Update `FilterPanel.tsx` if needed
+
+### Modifying Status Workflow
+
+1. Update `ReportStatus` type in `src/types/report.ts`
+2. Modify database CHECK constraint in `backend/database.py`
+3. Update `STATUSES` array in components
+
+## 📄 License
+
+© 2026 Post-Disaster Damage Assessment Platform
+
+## 🤝 Support
+
+For issues or questions:
+1. Check the troubleshooting section
+2. Review API documentation at `/docs`
+3. Check browser console for errors
+4. Verify backend logs
+
+## 🎯 Future Enhancements
+
+- Push notifications for new reports
+- SMS alerts for high-severity incidents
+- Export reports to PDF/Excel
+- Multi-language support
+- Mobile native apps (iOS/Android)
+- Advanced analytics dashboard
+- Integration with government emergency systems

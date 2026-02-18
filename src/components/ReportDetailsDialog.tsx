@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { StatusBadge, SeverityBadge } from '@/components/StatusBadge';
-import { updateReportStatus } from '@/db/api';
+import { updateReportStatus } from '@/services/apiService';
 import { toast } from 'sonner';
 import { MapPin, Calendar, Loader2 } from 'lucide-react';
 

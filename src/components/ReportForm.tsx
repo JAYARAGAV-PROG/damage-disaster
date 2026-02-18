@@ -23,14 +23,13 @@ import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useGeolocation } from '@/hooks/useGeolocation';
-import { createReport } from '@/db/api';
-import { supabase } from '@/db/supabase';
+import { createReportWithImage } from '@/services/apiService';
 import {
   compressImage,
   validateImageFile,
   formatFileSize
 } from '@/lib/imageUtils';
-import { savePendingReport, isOnline } from '@/lib/offlineStorage';
+import { saveReportOffline, isOnline } from '@/lib/offlineStorage';
 import type { ReportFormData, ReportCategory, ReportSeverity } from '@/types/report';
 import { toast } from 'sonner';
 import { MapPin, Upload, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
@@ -107,16 +106,15 @@ export function ReportForm() {
       // Check if online
       if (!isOnline()) {
         // Save to IndexedDB for later sync
-        const reportData = {
+        await saveReportOffline({
           category: data.category,
           severity: data.severity,
           description: data.description,
           latitude: coords.latitude,
           longitude: coords.longitude,
-          image_url: 'pending' // Will be uploaded when online
-        };
-
-        await savePendingReport(reportData);
+          image: compressedImage
+        });
+        
         toast.info('You are offline. Report saved and will be synced when online.');
         
         // Reset form
@@ -129,41 +127,19 @@ export function ReportForm() {
         return;
       }
 
-      // Upload image to Supabase Storage
-      const fileName = `${Date.now()}_${compressedImage.name}`;
-      const filePath = `damage-reports/${fileName}`;
+      // Create FormData for API request
+      const formData = new FormData();
+      formData.append('category', data.category);
+      formData.append('severity', data.severity);
+      formData.append('description', data.description);
+      formData.append('latitude', coords.latitude.toString());
+      formData.append('longitude', coords.longitude.toString());
+      formData.append('image', compressedImage);
 
       setUploadProgress(60);
 
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('app-9pzqnj8eh1j5_damage_images')
-        .upload(filePath, compressedImage, {
-          contentType: compressedImage.type,
-          upsert: false
-        });
-
-      if (uploadError) {
-        throw uploadError;
-      }
-
-      setUploadProgress(80);
-
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from('app-9pzqnj8eh1j5_damage_images')
-        .getPublicUrl(filePath);
-
-      // Create report
-      const reportData = {
-        category: data.category,
-        severity: data.severity,
-        description: data.description,
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-        image_url: urlData.publicUrl
-      };
-
-      await createReport(reportData);
+      // Submit to backend API
+      await createReportWithImage(formData);
 
       setUploadProgress(100);
       
@@ -179,9 +155,9 @@ export function ReportForm() {
       setImagePreview(null);
       setCompressedSize(null);
       setUploadProgress(0);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting report:', error);
-      toast.error('Failed to submit report. Please try again.');
+      toast.error(error.message || 'Failed to submit report. Please try again.');
     } finally {
       setUploading(false);
     }

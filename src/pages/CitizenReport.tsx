@@ -2,13 +2,18 @@ import { ReportForm } from '@/components/ReportForm';
 import { useOfflineSync } from '@/hooks/useOfflineSync';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { RefreshCw, Wifi, WifiOff, AlertTriangle } from 'lucide-react';
+import { RefreshCw, Wifi, WifiOff, AlertTriangle, LogOut, User } from 'lucide-react';
 import { isOnline } from '@/lib/offlineStorage';
+import { authService } from '@/services/authService';
+import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 
 export default function CitizenReport() {
   const { syncing, pendingCount, syncPendingReports } = useOfflineSync();
   const [online, setOnline] = useState(isOnline());
+  const navigate = useNavigate();
+  const user = authService.getUser();
 
   useEffect(() => {
     const handleOnline = () => setOnline(true);
@@ -23,15 +28,39 @@ export default function CitizenReport() {
     };
   }, []);
 
+  const handleLogout = () => {
+    authService.logout();
+    toast.success('Logged out successfully');
+    navigate('/login');
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-primary text-primary-foreground py-6 px-4 shadow-md">
         <div className="container mx-auto">
-          <h1 className="text-3xl font-bold">Post-Disaster Damage Assessment</h1>
-          <p className="text-sm mt-2 opacity-90">
-            Report infrastructure damage to help authorities respond quickly
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold">Post-Disaster Damage Assessment</h1>
+              <p className="text-sm mt-2 opacity-90">
+                Report infrastructure damage to help authorities respond quickly
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 text-sm">
+                <User className="h-4 w-4" />
+                <span>{user?.username}</span>
+              </div>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleLogout}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </div>
+          </div>
         </div>
       </header>
 

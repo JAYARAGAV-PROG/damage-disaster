@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react';
-import { createReport } from '@/db/api';
-import {
-  getPendingReports,
-  removePendingReport,
-  isOnline
-} from '@/lib/offlineStorage';
+import { createReportWithImage } from '@/services/apiService';
+import { getPendingReports, removePendingReport } from '@/lib/indexedDB';
+import { base64ToFile, isOnline } from '@/lib/offlineStorage';
 import { toast } from 'sonner';
 
 export function useOfflineSync() {
@@ -28,7 +25,28 @@ export function useOfflineSync() {
 
       for (const item of pending) {
         try {
-          await createReport(item.reportData);
+          const { reportData } = item;
+          
+          // Convert base64 image back to File
+          const imageFile = base64ToFile(
+            reportData.image_url,
+            reportData.imageFile.name,
+            reportData.imageFile.type
+          );
+
+          // Create FormData
+          const formData = new FormData();
+          formData.append('category', reportData.category);
+          formData.append('severity', reportData.severity);
+          formData.append('description', reportData.description);
+          formData.append('latitude', reportData.latitude.toString());
+          formData.append('longitude', reportData.longitude.toString());
+          formData.append('image', imageFile);
+
+          // Submit to backend
+          await createReportWithImage(formData);
+          
+          // Remove from IndexedDB after successful sync
           await removePendingReport(item.id);
           setPendingCount((prev) => prev - 1);
         } catch (error) {

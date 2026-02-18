@@ -3,12 +3,14 @@ import { MapView } from '@/components/MapView';
 import { FilterPanel, type FilterState } from '@/components/FilterPanel';
 import { ReportCard } from '@/components/ReportCard';
 import { ReportDetailsDialog } from '@/components/ReportDetailsDialog';
-import { getReportsInBounds, subscribeToReports } from '@/db/api';
+import { getReportsInBounds, getAllReports } from '@/services/apiService';
+import { authService } from '@/services/authService';
+import { useNavigate } from 'react-router-dom';
 import type { Report, MapBounds } from '@/types/report';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Map, List, RefreshCw } from 'lucide-react';
+import { Map, List, LogOut, User } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AuthorityDashboard() {
@@ -23,44 +25,46 @@ export default function AuthorityDashboard() {
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [view, setView] = useState<'map' | 'list'>('map');
+  const navigate = useNavigate();
+  const user = authService.getUser();
 
   // Fetch reports when bounds change
   useEffect(() => {
-    if (!bounds) return;
-
     const fetchReports = async () => {
       setLoading(true);
       try {
-        const data = await getReportsInBounds(bounds);
+        let data: Report[];
+        if (bounds && view === 'map') {
+          data = await getReportsInBounds(bounds);
+        } else {
+          data = await getAllReports();
+        }
         setReports(data);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching reports:', error);
-        toast.error('Failed to load reports');
+        toast.error(error.message || 'Failed to load reports');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchReports();
-  }, [bounds]);
+    if (bounds || view === 'list') {
+      fetchReports();
+    }
+  }, [bounds, view]);
 
-  // Subscribe to real-time updates
+  // Refresh reports periodically (every 30 seconds)
   useEffect(() => {
-    const unsubscribe = subscribeToReports((payload) => {
-      if (payload.eventType === 'INSERT') {
-        setReports((prev) => [payload.new, ...prev]);
-        toast.info('New damage report received');
-      } else if (payload.eventType === 'UPDATE') {
-        setReports((prev) =>
-          prev.map((report) => (report.id === payload.new.id ? payload.new : report))
-        );
-      } else if (payload.eventType === 'DELETE' && payload.old) {
-        setReports((prev) => prev.filter((report) => report.id !== payload.old?.id));
+    const interval = setInterval(() => {
+      if (bounds && view === 'map') {
+        getReportsInBounds(bounds).then(setReports).catch(console.error);
+      } else if (view === 'list') {
+        getAllReports().then(setReports).catch(console.error);
       }
-    });
+    }, 30000);
 
-    return unsubscribe;
-  }, []);
+    return () => clearInterval(interval);
+  }, [bounds, view]);
 
   // Apply filters
   const filteredReports = useMemo(() => {
@@ -85,9 +89,17 @@ export default function AuthorityDashboard() {
 
   const handleStatusUpdate = () => {
     // Refresh reports after status update
-    if (bounds) {
+    if (bounds && view === 'map') {
       getReportsInBounds(bounds).then(setReports);
+    } else {
+      getAllReports().then(setReports);
     }
+  };
+
+  const handleLogout = () => {
+    authService.logout();
+    toast.success('Logged out successfully');
+    navigate('/login');
   };
 
   // Statistics
@@ -113,24 +125,38 @@ export default function AuthorityDashboard() {
                 Monitor and manage damage reports across India
               </p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-4">
+              <div className="flex gap-2">
+                <Button
+                  variant={view === 'map' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  onClick={() => setView('map')}
+                  className="text-primary-foreground hover:text-primary-foreground"
+                >
+                  <Map className="h-4 w-4 mr-2" />
+                  Map View
+                </Button>
+                <Button
+                  variant={view === 'list' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  onClick={() => setView('list')}
+                  className="text-primary-foreground hover:text-primary-foreground"
+                >
+                  <List className="h-4 w-4 mr-2" />
+                  List View
+                </Button>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <User className="h-4 w-4" />
+                <span>{user?.username}</span>
+              </div>
               <Button
-                variant={view === 'map' ? 'secondary' : 'ghost'}
+                variant="secondary"
                 size="sm"
-                onClick={() => setView('map')}
-                className="text-primary-foreground hover:text-primary-foreground"
+                onClick={handleLogout}
               >
-                <Map className="h-4 w-4 mr-2" />
-                Map View
-              </Button>
-              <Button
-                variant={view === 'list' ? 'secondary' : 'ghost'}
-                size="sm"
-                onClick={() => setView('list')}
-                className="text-primary-foreground hover:text-primary-foreground"
-              >
-                <List className="h-4 w-4 mr-2" />
-                List View
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
               </Button>
             </div>
           </div>

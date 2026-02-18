@@ -1,10 +1,23 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
+import { authService } from '@/services/authService';
+import { useEffect } from 'react';
 import { AlertTriangle, Shield, MapPin, Camera } from 'lucide-react';
 
 export default function Home() {
   const navigate = useNavigate();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (authService.isAuthenticated()) {
+      if (authService.isAdmin()) {
+        navigate('/dashboard');
+      } else {
+        navigate('/report');
+      }
+    }
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -25,7 +38,7 @@ export default function Home() {
             <Button
               size="lg"
               variant="secondary"
-              onClick={() => navigate('/report')}
+              onClick={() => navigate('/login')}
               className="text-lg"
             >
               <Camera className="mr-2 h-5 w-5" />
@@ -34,7 +47,7 @@ export default function Home() {
             <Button
               size="lg"
               variant="outline"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/login')}
               className="text-lg bg-transparent text-primary-foreground border-primary-foreground hover:bg-primary-foreground hover:text-primary"
             >
               <Shield className="mr-2 h-5 w-5" />
@@ -197,7 +210,7 @@ export default function Home() {
             Join thousands of citizens helping their communities recover faster by reporting
             infrastructure damage in real-time.
           </p>
-          <Button size="lg" onClick={() => navigate('/report')}>
+          <Button size="lg" onClick={() => navigate('/login')}>
             <Camera className="mr-2 h-5 w-5" />
             Start Reporting Now
           </Button>
