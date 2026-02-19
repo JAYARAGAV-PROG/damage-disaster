@@ -33,7 +33,7 @@ app = FastAPI(title="Post-Disaster Damage Assessment API")
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=["http://localhost:5173", "http://localhost:3000","https://damage-disaster-f4vxxopv0-jays-projects-630a23b3.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
