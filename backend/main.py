@@ -24,7 +24,8 @@ from auth import (
 )
 
 # Load environment variables
-load_dotenv()
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), ".env"))
+
 
 # Initialize FastAPI app
 app = FastAPI(title="Post-Disaster Damage Assessment API")
@@ -41,7 +42,8 @@ app.add_middleware(
 # Configure Cloudinary (using free tier)
 cloudinary.config(
     cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME", "demo"),
-    api_key=os.getenv("CLOUDINARY_API_KEY", ""),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    
     api_secret=os.getenv("CLOUDINARY_API_SECRET", "")
 )
 
@@ -268,6 +270,11 @@ async def get_stats(current_user: dict = Depends(get_current_admin)):
     }
     
     return stats
+
+print("Cloud Name:", os.getenv("CLOUDINARY_CLOUD_NAME"))
+print("API Key:", os.getenv("CLOUDINARY_API_KEY"))
+print("API Secret:", os.getenv("CLOUDINARY_API_SECRET"))
+
 
 if __name__ == "__main__":
     import uvicorn

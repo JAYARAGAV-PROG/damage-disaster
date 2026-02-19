@@ -1,3 +1,7 @@
+# Welcome to Your Miaoda Project
+Miaoda Application Link URL
+    URL:https://medo.dev/projects/app-9pzqnj8eh1j5
+
 # Post-Disaster Damage Assessment Platform
 
 A full-stack web application that enables citizens to report infrastructure damage using mobile devices and provides authorities with a centralized map-based dashboard for rapid response coordination across India.

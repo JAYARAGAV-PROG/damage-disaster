@@ -48,11 +48,15 @@ def init_database():
     
     # Create default admin user (username: admin, password: admin123)
     # Password hash for 'admin123'
-    admin_hash = '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYqVr/qvQu6'
+    from auth import get_password_hash
+
+    admin_password_hash = get_password_hash("admin123")
+
     cursor.execute('''
-        INSERT OR IGNORE INTO users (username, email, password_hash, role)
-        VALUES ('admin', 'admin@disaster.gov.in', ?, 'admin')
-    ''', (admin_hash,))
+    INSERT OR IGNORE INTO users (username, email, password_hash, role)
+    VALUES ('admin', 'admin@disaster.gov.in', ?, 'admin')
+    ''', (admin_password_hash,))
+
     
     conn.commit()
     conn.close()
